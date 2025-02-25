@@ -1,0 +1,4 @@
+#!/bin/bash
+
+CUR_UID=$(id -u) CUR_GID=$(id -g) CUR_UN=$(id -un) CUR_GN=$(id -gn) docker compose build
+

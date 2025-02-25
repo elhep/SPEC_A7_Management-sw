@@ -1,0 +1,13 @@
+services:
+
+  openwrt_builder:
+    build:
+      context: ./helpers_docker/
+      args:
+        - CUR_UID=$CUR_UID
+        - CUR_GID=$CUR_GID
+        - CUR_UN=$CUR_UN
+        - CUR_GN=$CUR_GN
+    volumes:
+      - ./data:/home/$CUR_UN:RW
+

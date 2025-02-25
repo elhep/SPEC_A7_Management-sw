@@ -1,0 +1,106 @@
+/dts-v1/;
+
+/ {
+
+	fragment@0 {
+		target-path = "/chosen";
+
+		__overlay__ {
+
+			overlays {
+				qs93-eqos-lan8710;
+			};
+		};
+	};
+
+	fragment@1 {
+		target = <0xffffffff>;
+
+		__overlay__ {
+			pinctrl-names = "default";
+			pinctrl-0 = <0x01>;
+			assigned-clock-rates = <0x5f5e100 0x2faf080>;
+			phy-mode = "rmii";
+			phy-handle = <0x02>;
+			status = "okay";
+
+			mdio {
+				compatible = "snps,dwmac-mdio";
+				pinctrl-names = "default";
+				pinctrl-0 = <0x03>;
+				clocks = <0xffffffff 0x5c>;
+				reset-gpios = <0xffffffff 0x04 0x01>;
+				reset-delay-us = <0x61a8>;
+				reset-post-delay-us = <0x64>;
+				#address-cells = <0x01>;
+				#size-cells = <0x00>;
+
+				ethernet-phy@0 {
+					reg = <0x00>;
+					pinctrl-names = "default";
+					pinctrl-0 = <0x04>;
+					interrupt-parent = <0xffffffff>;
+					interrupts = <0x05 0x02>;
+					eee-broken-100tx;
+					smsc,disable-energy-detect;
+					phandle = <0x02>;
+				};
+			};
+		};
+	};
+
+	fragment@2 {
+		target = <0xffffffff>;
+
+		__overlay__ {
+
+			eqos-rmiigrp {
+				fsl,pins = <0x98 0x248 0x00 0x00 0x00 0x51e 0x9c 0x24c 0x00 0x00 0x00 0x11e 0xa4 0x254 0x00 0x01 0x00 0x4000011e 0xc0 0x270 0x00 0x00 0x00 0x300 0xc4 0x274 0x00 0x00 0x00 0x300 0xb8 0x268 0x00 0x00 0x00 0x300 0xbc 0x26c 0x00 0x01 0x00 0x500 0xac 0x25c 0x00 0x00 0x00 0x51e 0xa8 0x258 0x00 0x00 0x00 0x51e 0xb0 0x260 0x00 0x00 0x00 0x51e>;
+				phandle = <0x01>;
+			};
+
+			ethphy0-intgrp {
+				fsl,pins = <0x164 0x314 0x00 0x05 0x00 0x300>;
+				phandle = <0x04>;
+			};
+
+			ethphy0-rstgrp {
+				fsl,pins = <0x160 0x310 0x00 0x05 0x00 0x11e>;
+				phandle = <0x03>;
+			};
+		};
+	};
+
+	__symbols__ {
+		ethphy0 = "/fragment@1/__overlay__/mdio/ethernet-phy@0";
+		pinctrl_eqos_rmii = "/fragment@2/__overlay__/eqos-rmiigrp";
+		pinctrl_ethphy0_int = "/fragment@2/__overlay__/ethphy0-intgrp";
+		pinctrl_ethphy0_rst = "/fragment@2/__overlay__/ethphy0-rstgrp";
+	};
+
+	__fixups__ {
+		eqos = "/fragment@1:target:0";
+		clk = "/fragment@1/__overlay__/mdio:clocks:0";
+		gpio3 = "/fragment@1/__overlay__/mdio:reset-gpios:0\0/fragment@1/__overlay__/mdio/ethernet-phy@0:interrupt-parent:0";
+		iomuxc = "/fragment@2:target:0";
+	};
+
+	__local_fixups__ {
+
+		fragment@1 {
+
+			__overlay__ {
+				pinctrl-0 = <0x00>;
+				phy-handle = <0x00>;
+
+				mdio {
+					pinctrl-0 = <0x00>;
+
+					ethernet-phy@0 {
+						pinctrl-0 = <0x00>;
+					};
+				};
+			};
+		};
+	};
+};
