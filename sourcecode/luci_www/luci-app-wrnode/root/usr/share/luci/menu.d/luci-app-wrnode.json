@@ -1,0 +1,57 @@
+{
+  "admin/wrnode/": {
+    "title": "WR node",
+    "order": 70,
+    "action": {
+      "type": "firstchild"
+    },
+    "depends": {
+      "acl": [ "luci-app-wrnode" ]
+    }
+  },
+
+  "admin/wrnode/status": {
+    "title": "Status",
+    "order": 1,
+    "action": {
+      "type": "view",
+      "path": "wrnode/status"
+    }
+  },
+
+  "admin/wrnode/fpga": {
+    "title": "FPGA",
+    "order": 2,
+    "action": {
+      "type": "view",
+      "path": "wrnode/fpga"
+    }
+  },
+
+  "admin/wrnode/spiflash": {
+    "title": "FLASH",
+    "order": 3,
+    "action": {
+      "type": "view",
+      "path": "wrnode/spiflash"
+    }
+  },
+
+  "admin/wrnode/xvc_cfg": {
+    "title": "XVC config",
+    "order": 4,
+    "action": {
+      "type": "view",
+      "path": "wrnode/xvc"
+    }
+  },
+  
+  "admin/wrnode/terminal": {
+    "title": "Terminal",
+    "order": 5,
+    "action": {
+      "type": "view",
+      "path": "wrnode/shellinabox"
+    }
+  }
+}

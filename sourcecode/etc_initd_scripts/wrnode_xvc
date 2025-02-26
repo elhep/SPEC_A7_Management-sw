@@ -1,0 +1,22 @@
+#!/bin/sh /etc/rc.common
+
+START=90
+USE_PROCD=1
+
+start_service() {
+        procd_open_instance
+        procd_set_param command /daemons/xvc
+#        procd_append_param command [COMMAND ARGUMENTS]     # optionally append command parameters
+        procd_set_param respawn  # respawn the service if it exits
+#        procd_set_param stdout 1 # forward stdout of the command to logd
+#        procd_set_param stderr 1 # same for stderr
+        procd_set_param pidfile /var/run/wrnode_xvc.pid # write a pid file on instance start and remove it on stop
+        procd_close_instance
+        
+        gpioctl dirout-low 1 # set JTAG_SEL to LOW (enable input from Omega)
+        echo $(jq '.wrnode_xvc = "on"' /dev/shm/wrnode_status/services.json) > /dev/shm/wrnode_status/services.json
+}
+
+stop_service() {
+        echo $(jq '.wrnode_xvc = "off"' /dev/shm/wrnode_status/services.json) > /dev/shm/wrnode_status/services.json
+}

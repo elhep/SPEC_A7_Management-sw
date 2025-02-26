@@ -1,0 +1,3 @@
+config main 'config'
+    option port '2542'
+    option verbosity 'info'

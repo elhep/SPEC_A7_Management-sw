@@ -1,0 +1,23 @@
+{
+  "luci-app-wrnode": {
+    "description": "Grant UCI and RPC access to LuCI app",
+    "read": {
+      "uci": [
+        "xvc"
+      ]
+    },
+    "write": {
+      "uci": [
+        "xvc"
+      ],
+      "file": {
+        "/tmp/fpga_gw.bin": [ "write" ],
+        "/root/openocd_fpga/program_smt2nc.sh *": [ "exec" ],
+        "/sbin/service *": [ "exec" ],
+        "/usr/bin/logger *": [ "exec" ],
+        "/root/get_status_services": [ "exec" ],
+        "/root/get_status_wrnode": [ "exec" ]
+			}
+    }
+  }
+}
