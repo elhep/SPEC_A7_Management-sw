@@ -1,6 +1,6 @@
 # SPEC A7 Management Software
 ### Project description
-This repository provides software for a plug-in board (with ARM processor, SFP and RJ45),
+This repository provides software for a plugin board (with ARM processor, SFP and RJ45),
 designed for WR node management.
 
 The software is written for the Ka-Ro QS93-5210 (+ OpenWRT Linux):<br>
@@ -8,6 +8,11 @@ https://www.karo-electronics.de/qs93/
 
 Hardware repository:<br>
 https://github.com/elhep/SPEC_A7_Management
+
+
+
+### Software architecture
+![simplified system arch](./doc/system_diagram.drawio.png)
 
 
 ### Building OpenWRT (+ OpenWRT SDK)
@@ -22,4 +27,3 @@ $ ./build_openwrt.sh
 ```
 built images can be found in:<br>
 ./qs93_linux/data/imx_openwrt/build_dir/target-aarch64_generic_musl/linux-imx_cortexa55
-

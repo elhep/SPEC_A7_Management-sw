@@ -928,7 +928,7 @@
 				clock-names = "per\0ipg";
 				dmas = <0x16 0x0e 0x00 0x00 0x16 0x0f 0x00 0x01>;
 				dma-names = "tx\0rx";
-				status = "disabled";
+				status = "okay";
 				pinctrl-names = "default";
 				pinctrl-0 = <0x1e 0x1f>;
 				spi-max-frequency = <0x17d7840>;
