@@ -1,0 +1,34 @@
+/dts-v1/;
+
+/ {
+
+	fragment@0 {
+		target-path = "/chosen";
+
+		__overlay__ {
+
+			overlays {
+				qs93-spidev;
+			};
+		};
+	};
+
+	fragment@1 {
+		target = <0xffffffff>;
+
+		__overlay__ {
+			status = "okay";
+            cs-gpios = <0xffffffff 8 0x00>;
+
+			spidev@0 {
+				compatible = "rohm,dh2228fv", "spidev";
+				reg = <0x00>;
+			};
+		};
+	};
+
+	__fixups__ {
+		lpspi3 = "/fragment@1:target:0";
+        gpio2 = "/fragment@1/__overlay__/:cs-gpios:0";
+	};
+};
