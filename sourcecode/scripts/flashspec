@@ -1,0 +1,129 @@
+#!/bin/sh
+# Script for programming and reading data from SPI flash memory using flashrom-spi
+
+# flashrom-spi -r firmware.bin -p linux_spi:dev=/dev/spidev1.0,spispeed=16500 -c MX25L12835F/MX25L12845E/MX25L12865E
+
+FLASHROM_TOOL="flashrom-spi"
+CHIP="MX25L12835F/MX25L12845E/MX25L12865E"
+SPISPEED="16500"
+SPIDEV="/dev/spidev1.0"
+
+ACTION=""
+FILE=""
+
+print_help() {
+    echo "Usage: $(basename "$0") [OPTION] [ARGUMENT]"
+    echo "Script for programming and reading data from SPECA7 SPI flash memory."
+    echo ""
+    echo "Options:"
+    echo "  -e, --erase              erase flash memory"
+    echo "  -w, --write <file>       write <file> to flash"
+    echo "  -r, --read <file>        read flash and save to <file>"
+    echo "  -v, --verify <file>      verify flash against <file>"
+    echo "  -h, --help               print this help text"
+    echo ""
+    echo "Examples:"
+    echo "  $(basename "$0") --erase"
+    echo "  $(basename "$0") --write firmware.bin"
+    echo "  $(basename "$0") --read backup.bin"
+    echo "  $(basename "$0") --verify firmware.bin"
+    exit 0
+}
+
+while [[ "$#" -gt 0 ]]; do
+    case "$1" in
+        -e|--erase)
+            ACTION="erase"
+            shift
+            ;;
+        -w|--write)
+            ACTION="write"
+            if [[ -z "$2" ]]; then
+                echo "Error: No file specified for writing."
+                print_help
+            fi
+            FILE="$2"
+            shift 2
+            ;;
+        -r|--read)
+            ACTION="read"
+            if [[ -z "$2" ]]; then
+                echo "Error: No filename specified for reading."
+                print_help
+            fi
+            FILE="$2"
+            shift 2
+            ;;
+        -v|--verify)
+            ACTION="verify"
+            if [[ -z "$2" ]]; then
+                echo "Error: No file specified for verification."
+                print_help
+            fi
+            FILE="$2"
+            shift 2
+            ;;
+        -h|--help)
+            print_help
+            ;;
+        *)
+            echo "Unknown option: $1"
+            print_help
+            ;;
+    esac
+done
+
+
+case "$ACTION" in
+    "erase")
+        echo "Starting flash memory erase..."
+        "$FLASHROM_TOOL" --erase -p linux_spi:dev="$SPIDEV",spispeed="$SPISPEED" -c "$CHIP"
+        if [[ $? -eq 0 ]]; then
+            echo "Flash memory successfully erased."
+        else
+            echo "An error occurred during flash memory erase."
+            exit 1
+        fi
+        ;;
+    "write")
+        if [[ ! -f "$FILE" ]]; then 
+            echo "Error: File '$FILE' does not exist."
+            exit 1
+        fi
+        echo "Writing data from '$FILE' to flash memory..."
+        "$FLASHROM_TOOL" --write "$FILE" -p linux_spi:dev="$SPIDEV",spispeed="$SPISPEED" -c "$CHIP"
+        if [[ $? -eq 0 ]]; then
+            echo "Data successfully written to flash memory."
+        else
+            echo "An error occurred during data write to flash memory."
+            exit 1
+        fi
+        ;;
+    "read")
+        echo "Reading data from flash memory and saving to '$FILE'..."
+        "$FLASHROM_TOOL" --read "$FILE" -p linux_spi:dev="$SPIDEV",spispeed="$SPISPEED" -c "$CHIP"
+        if [[ $? -eq 0 ]]; then
+            echo "Data successfully read and saved to '$FILE'."
+        else
+            echo "An error occurred during data read from flash memory."
+            exit 1
+        fi
+        ;;
+    "verify")
+        if [[ ! -f "$FILE" ]]; then
+            echo "Error: File '$FILE' does not exist."
+            exit 1
+        fi
+        echo "Verifying flash memory with file '$FILE'..."
+        "$FLASHROM_TOOL" --verify "$FILE" -p linux_spi:dev="$SPIDEV",spispeed="$SPISPEED" -c "$CHIP"
+        if [[ $? -eq 0 ]]; then
+            echo "Verification successful: flash memory data matches file '$FILE'."
+        else
+            echo "Verification failed: flash memory data differs from file '$FILE'."
+            exit 1
+        fi
+        ;;
+    *)
+        echo "No action specified. Use -h or --help to display available options."
+        ;;
+esac
