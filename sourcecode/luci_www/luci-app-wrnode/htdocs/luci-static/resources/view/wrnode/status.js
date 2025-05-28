@@ -56,14 +56,16 @@ return view.extend({
 					wrnode_status_json = JSON.parse(ret['stdout']);
 				})
 				.then(function(){
-					json = amc_status_json;
-					console.log(amc_status_json)
+					json = wrnode_status_json;
+					console.log(wrnode_status_json)
 					if (e = document.getElementById('link_present'))
 						e.innerHTML = String.format('%s', json['link_present'].toUpperCase());
 		
 					if (e = document.getElementById('time_sync_status'))
-						e.innerHTML = String.format('%s', json['sensors']['time_sync_status'].toUpperCase());
+						e.innerHTML = String.format('%s', json['time_sync_status'].toUpperCase());
 
+					if (e = document.getElementById('status_raw'))
+						e.innerHTML = String.format('%s', json['status_raw'].toUpperCase());
 				});
 			}
 			else {
@@ -176,6 +178,10 @@ return view.extend({
 		table.appendChild(E('tr', { 'class': 'tr' }, [
 			E('td', { 'class': 'td left', 'width': '33%' }, 'Time sync status'), 
 			E('td', { 'id': 'time_sync_status', 'class': 'td left' }, '-')
+		]));
+		table.appendChild(E('tr', { 'class': 'tr' }, [
+			E('td', { 'class': 'td left', 'width': '33%' }, 'Status raw data'), 
+			E('td', { 'id': 'status_raw', 'class': 'td left' }, '-')
 		]));
 
 		body.appendChild(title);

@@ -1,27 +1,32 @@
 QS93_IP=192.168.0.17
+QS93_IP=10.60.0.58
 
 
 install_config:
-	# scp -r wrnode_status_init root@$(QS93_IP):/root/.
-	scp etc_config/* root@$(QS93_IP):/etc/config/.
+	scp -O -r wrnode_status_init root@$(QS93_IP):/root/.
+	scp -O etc_config/* root@$(QS93_IP):/etc/config/.
 
 install_etc_initd:
-	scp etc_initd_scripts/* root@$(QS93_IP):/etc/init.d/.
+	scp -O etc_initd_scripts/* root@$(QS93_IP):/etc/init.d/.
 
 install_hello:
 	cd ./hello && make
-	scp hello/hello root@$(QS93_IP):/root/.
+	scp -O hello/hello root@$(QS93_IP):/root/.
+
+install_spitest:
+	cd ./spidev_test && make
+	scp -O spidev_test/spidev_test root@$(QS93_IP):/root/.
 
 install_scripts:
-	scp -r scripts/* root@$(QS93_IP):/root/.
+	scp -O -r scripts/* root@$(QS93_IP):/root/.
 
 install_xvc:
 	cd ./xvc_server_daemon && make
-	scp xvc_server_daemon/xvc root@$(QS93_IP):/root/.
+	scp -O xvc_server_daemon/xvc root@$(QS93_IP):/root/.
 
 install_luci_app_wrnode:
-	scp -r luci_www/luci-app-wrnode/root/* root@$(QS93_IP):/
-	scp -r luci_www/luci-app-wrnode/htdocs/* root@$(QS93_IP):/www/
+	scp -O -r luci_www/luci-app-wrnode/root/* root@$(QS93_IP):/
+	scp -O -r luci_www/luci-app-wrnode/htdocs/* root@$(QS93_IP):/www/
 
 # before running install_all make sure that all wrnode management services are disabled
 install_all: \
