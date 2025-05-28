@@ -1,0 +1,33 @@
+#!/bin/sh
+# Script for reading status from SPEC A7 and saving it to file
+
+DEVICE="/dev/ttyUSB2"
+FILE="/dev/shm/wrnode_status"
+TIMEOUT=1
+
+# send 'q' to quit gui mode
+echo -n -e '\x71' > "$DEVICE"
+sleep .1
+echo -n -e '\x0d' > "$DEVICE"
+sleep 1
+
+{ cat $DEVICE > $FILE; } &
+PID=$! 
+
+# send 'gui' to open gui mode
+echo -n -e '\x67' > "$DEVICE"
+sleep .1
+echo -n -e '\x75' > "$DEVICE"
+sleep .1
+echo -n -e '\x69' > "$DEVICE"
+sleep .1
+echo -n -e '\x0d' > "$DEVICE"
+
+# kill cat process after timeout
+sleep $TIMEOUT
+kill $PID &>/dev/null 
+
+# send 'q' to quit gui mode
+echo -n -e '\x71' > "$DEVICE"
+sleep .1
+echo -n -e '\x0d' > "$DEVICE"
