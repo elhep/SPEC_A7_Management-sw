@@ -1,0 +1,8 @@
+Prepare tftp server with Image & devicetree (imx93-final.dtb)
+then power-up QS93, get into u-boot and run:
+
+setenv serverip YOUR-TFTP-SERVER-IP
+setenv loadkernel_tftp "dhcp; tftp ${loadaddr} ${serverip}:Image; tftp ${fdt_addr} ${serverip}:imx93-final.dtb"
+setenv bootcmd_tftp "run loadkernel_tftp bootargs_mmc"
+setenv boot_mode tftp
+saveenv
