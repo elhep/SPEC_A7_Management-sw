@@ -21,40 +21,10 @@ TODO: update pin numbers
 
 #include "gpio.c"
 
-// #define IMX93_PERI_BASE      0x10000000
-// #define IMX93_PERI_SIZE      0x1000
-
-// #define IMX93_GPIO_OFFSET    0x600
-// #define IMX93_GPIO_DATA_0    0x20
-// #define IMX93_GPIO_DSET_0    0x30
-// #define IMX93_GPIO_DCLR_0    0x40
-
-/* GPIO setup macros */
-// #define MODE_GPIO(g) (*(pio_base+((g)/10))>>(((g)%10)*3) & 7)
-// #define INP_GPIO(g) do { *(pio_base+((g)/10)) &= ~(7<<(((g)%10)*3)); } while (0)
-// #define SET_MODE_GPIO(g, m) do { /* clear the mode bits first, then set as necessary */ \
-//       INP_GPIO(g);						\
-//       *(pio_base+((g)/10)) |=  ((m)<<(((g)%10)*3)); } while (0)
-// #define OUT_GPIO(g) SET_MODE_GPIO(g, 1)
-
-// #define GPIO_SET (*(pio_base + (IMX93_GPIO_OFFSET >> 2) + (IMX93_GPIO_DSET_0 >> 2)))  /* sets   bits which are 1, ignores bits which are 0 */
-// #define GPIO_CLR (*(pio_base + (IMX93_GPIO_OFFSET >> 2) + (IMX93_GPIO_DCLR_0 >> 2))) /* clears bits which are 1, ignores bits which are 0 */
-// #define GPIO_LEV (*(pio_base + (IMX93_GPIO_OFFSET >> 2) + (IMX93_GPIO_DATA_0 >> 2))) /* current level of the pin */
-
-// static int dev_mem_fd;
-// static volatile uint32_t *pio_base;
-
 static bool     imx93gpio_init(void);
 static int      imx93gpio_read(void);
 static void     imx93gpio_write(int tck, int tms, int tdi);
 static uint32_t imx93gpio_xfer(int n, uint32_t tms, uint32_t tdi);
-
-// /* GPIO numbers for each signal. Negative values are invalid */
-// static int tms_gpio = 11;
-// static int tdo_gpio = 19;
-// static int tdi_gpio = 20;
-// static int tck_gpio = 21;
-// static int trst_gpio = 2;  // not used
 
 static const struct gpio_config TCK_GPIO = { 0, "/dev/gpiochip0", "jtag_tck"};
 static const struct gpio_config TDI_GPIO = { 1, "/dev/gpiochip0", "jtag_tdi"};
@@ -69,10 +39,6 @@ static int verbose = 0;
 #define JTAG_DELAY (40)
 static unsigned int jtag_delay = JTAG_DELAY;
 
-// ********************************************************************
-// fucntions for imx93gpio ********************************************
-// ********************************************************************
-
 static int imx93gpio_read(void)
 {  
    enum gpiod_line_value value = gpiod_line_request_get_value(tdo_request, TDO_GPIO.pin);
@@ -81,17 +47,10 @@ static int imx93gpio_read(void)
       return 1;
    else
       return 0;
-
-   // return !!(GPIO_LEV & 1<<tdo_gpio);
 }
 
 static void imx93gpio_write(int tck, int tms, int tdi)
 {
-   // uint32_t set = tck<<tck_gpio | tms<<tms_gpio | tdi<<tdi_gpio;
-   // uint32_t clear = !tck<<tck_gpio | !tms<<tms_gpio | !tdi<<tdi_gpio;
-
-   // GPIO_SET = set;
-   // GPIO_CLR = clear;
    gpiod_line_request_set_value(tdi_request, TDI_GPIO.pin, tdi ? GPIOD_LINE_VALUE_ACTIVE : GPIOD_LINE_VALUE_INACTIVE);
    gpiod_line_request_set_value(tms_request, TMS_GPIO.pin, tms ? GPIOD_LINE_VALUE_ACTIVE : GPIOD_LINE_VALUE_INACTIVE);
    gpiod_line_request_set_value(tck_request, TCK_GPIO.pin, tck ? GPIOD_LINE_VALUE_ACTIVE : GPIOD_LINE_VALUE_INACTIVE);
@@ -116,30 +75,6 @@ static uint32_t imx93gpio_xfer(int n, uint32_t tms, uint32_t tdi)
 
 static bool imx93gpio_init(void)
 {
-//    dev_mem_fd = open("/dev/mem", O_RDWR | O_SYNC);
-//    if (dev_mem_fd < 0) {
-//       perror("open");
-//       return false;
-//    }
-
-//    if (verbose) {
-//       printf("address=%08x size=%08x\n", IMX93_PERI_BASE, IMX93_PERI_SIZE);
-//    }
-
-//    pio_base = mmap(NULL, IMX93_PERI_SIZE, PROT_READ | PROT_WRITE,
-//             MAP_SHARED, dev_mem_fd, IMX93_PERI_BASE);
-
-//    if (pio_base == MAP_FAILED) {
-//       perror("mmap");
-//       close(dev_mem_fd);
-//       return false;
-//    }
-
-// //    /*
-// //     * Configure TDO as an input, and TDI, TCK, TMS
-// //     * as outputs.  Drive TDI and TCK low, and TMS high.
-// //     */
-
    tck_request = request_output_line(TCK_GPIO.chip, TCK_GPIO.pin, GPIOD_LINE_VALUE_INACTIVE, TCK_GPIO.consumer);
 	if (!tck_request) {
 		fprintf(stderr, "failed to request TCK line: %s\n",
@@ -164,15 +99,6 @@ static bool imx93gpio_init(void)
          strerror(errno));
       return EXIT_FAILURE;
    }
-
-// //    INP_GPIO(tdo_gpio);
-
-//    GPIO_CLR = 1<<tdi_gpio | 1<<tck_gpio;
-//    GPIO_SET = 1<<tms_gpio;
-
-//    // OUT_GPIO(tdi_gpio);
-//    // OUT_GPIO(tck_gpio);
-//    // OUT_GPIO(tms_gpio);
 
    imx93gpio_write(0, 1, 0);
 
@@ -375,7 +301,7 @@ int main(int argc, char **argv) {
       return 1;
    }
 
-   if (listen(s, 0) < 0) {
+   if (listen(s, SOMAXCONN) < 0) {
       perror("listen");
       return 1;
    }
