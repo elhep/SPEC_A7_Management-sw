@@ -1,33 +1,76 @@
 #!/bin/sh
-# Script for reading status from SPEC A7 and saving it to file
+# Script for reading status from SPEC A7 and saving it to json file
+
+LOCKFILE="/dev/shm/spec_serial.lock"
+SERIAL_DEVICE="/dev/ttyUSB2"
 
 DEVICE="/dev/ttyUSB2"
-FILE="/dev/shm/wrnode_status_raw"
-TIMEOUT=1
+TIMEOUT_US=100000
 
-# send 'q' to quit gui mode
-echo -n -e '\x71' > "$DEVICE"
-sleep .1
-echo -n -e '\x0d' > "$DEVICE"
-sleep 1
+RAW_FILE="/dev/shm/wrnode_status/status_raw"
+JSON_FILE="/dev/shm/wrnode_status/wrnode.json"
 
-{ cat $DEVICE > $FILE; } &
-PID=$! 
+UPDATE_INTERVAL_SEC=1
 
-# send 'gui' to open gui mode
-echo -n -e '\x67' > "$DEVICE"
-sleep .1
-echo -n -e '\x75' > "$DEVICE"
-sleep .1
-echo -n -e '\x69' > "$DEVICE"
-sleep .1
-echo -n -e '\x0d' > "$DEVICE"
+# List of keys to parse
+KEYS="lnk rx tx lock ptp sv ss sec nsec mu dms dtxm drxm dtxs drxs asym crtt cko setp ucnt bslide hd md ad"
 
-# kill cat process after timeout
-sleep $TIMEOUT
-kill $PID &>/dev/null 
+while true; do
+    echo "Attempting to acquire lock on SPEC Terminal"
+    (
+        flock 9 
+        echo -e "Lock acquired successfully\n"
 
-# send 'q' to quit gui mode
-echo -n -e '\x71' > "$DEVICE"
-sleep .1
-echo -n -e '\x0d' > "$DEVICE"
+        { cat $DEVICE > $RAW_FILE; } &
+        PID=$! 
+        usleep 1000
+
+        stty -F $DEVICE 115200 raw -echo
+        # send 'stat'
+        echo -n -e '\x73' > "$DEVICE"
+        usleep 1000
+        echo -n -e '\x74' > "$DEVICE"
+        usleep 1000
+        echo -n -e '\x61' > "$DEVICE"
+        usleep 1000
+        echo -n -e '\x74' > "$DEVICE"
+        usleep 1000
+        echo -n -e '\x0d' > "$DEVICE"
+
+        # kill cat process after timeout
+        usleep $TIMEOUT_US
+        kill $PID &>/dev/null 
+    # Open the LOCKFILE for writing on FD 9
+    ) 9> "$LOCKFILE" 
+
+    echo "Execution finished. Lock will be released."
+
+    # Process the output file to parse status
+    # read from RAW_FILE
+    LINE=$(tr '\n\r' ' ' < "$RAW_FILE")
+    echo "Processed status line: $LINE"
+
+    # Build jq filter dynamically for only selected keys
+    jq_filter="."
+    for key in $KEYS; do
+        # Extract value for this key (first match)
+        val=$(echo "$LINE" | grep -oE "$key:'?[^ ]+'?" | head -n1 | sed -E "s/^$key:'?//;s/'?\$//")
+        if [ -n "$val" ]; then
+            if [ "$key" = "lock" ] || [ "$key" = "sv" ]; then
+                if [ "$val" = "1" ]; then
+                    jq_filter="$jq_filter | .${key}.value = \"yes\""
+                else
+                    jq_filter="$jq_filter | .${key}.value = \"no\""
+                fi
+            else
+                jq_filter="$jq_filter | .${key}.value = \"${val}\""
+            fi
+        fi
+    done
+
+    # Update JSON file
+    tmpfile=$(mktemp)
+    jq "$jq_filter" "$JSON_FILE" > "$tmpfile" && mv "$tmpfile" "$JSON_FILE"
+
+    sleep $UPDATE_INTERVAL_SEC
+done

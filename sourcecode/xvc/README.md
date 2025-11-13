@@ -1,6 +1,13 @@
 # Xilinx Virtual Cable Server for WR node management board
 This tool is based on https://github.com/derekmulcahy/xvcpi
 
+## Build
+```commandline
+mkdir build
+cd buidl
+cmake ..
+make
+```
 
 ## Usage
 * run built xvc application on the target board

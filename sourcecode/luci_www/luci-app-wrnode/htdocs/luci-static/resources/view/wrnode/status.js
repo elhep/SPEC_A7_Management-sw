@@ -39,7 +39,7 @@ const statusRows = [
 	'bslide', 
 	'hd', 
 	'md', 
-	'ad'
+	'ad',
 ];
 
 function progressbar(val, max)
@@ -71,7 +71,7 @@ return view.extend({
 	pollData: function() {
 		poll.add(L.bind(function() {
 			console.log("poll_wrnode_status_timeout: ", poll_wrnode_status_timeout)
-			console.log("poll_services_status_timeout: ", poll_services_status_timeout)
+			// console.log("poll_services_status_timeout: ", poll_services_status_timeout)
 			var json;
 			var e;
 			

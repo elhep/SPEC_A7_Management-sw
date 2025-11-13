@@ -1,0 +1,17 @@
+#!/bin/sh
+
+LOCKFILE="/dev/shm/spec_serial.lock"
+SERIAL_DEVICE="/dev/ttyUSB2"
+
+echo "Attempting to acquire lock on SPEC Terminal"
+(
+    flock 9 
+    echo -e "Lock acquired successfully\n"
+    
+    echo "Hit enter to access WR console..."
+    echo "To exit, use Ctrl + a , then Ctrl + x"
+    picocom -b 115200 $SERIAL_DEVICE --quiet
+# Open the LOCKFILE for writing on FD 9
+) 9> "$LOCKFILE" 
+
+echo "Execution finished. Lock will be released."

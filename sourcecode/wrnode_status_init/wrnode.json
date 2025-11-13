@@ -1,0 +1,98 @@
+{
+  "lnk": {
+    "label": "Link Status",
+    "value": "0"
+  },
+  "rx": {
+    "label": "RX packet count",
+    "value": "0"
+  },
+  "tx": {
+    "label": "TX packet count",
+    "value": "51"
+  },
+  "lock": {
+    "label": "PLL locked",
+    "value": "0"
+  },
+  "ptp": {
+    "label": "PTP state",
+    "value": "listening"
+  },
+  "sv": {
+    "label": "Servo Valid flag",
+    "value": "0"
+  },
+  "ss": {
+    "label": "Servo state",
+    "value": "LINK_DOWN"
+  },
+  "sec": {
+    "label": "UTC time",
+    "value": "103"
+  },
+  "nsec": {
+    "label": "UTC time nsec",
+    "value": "721430480"
+  },
+  "dms": {
+    "label": "delayMS",
+    "value": "0"
+  },
+  "mu": {
+    "label": "delayMM",
+    "value": "0"
+  },
+  "asym": {
+    "label": "delayAssymetry",
+    "value": "0"
+  },
+  "dtxm": {
+    "label": "Master PHY delay TX",
+    "value": "0"
+  },
+  "drxm": {
+    "label": "Master PHY delay RX",
+    "value": "0"
+  },
+  "dtxs": {
+    "label": "Slave PHY delay TX",
+    "value": "0"
+  },
+  "drxs": {
+    "label": "Slave PHY delay RX",
+    "value": "0"
+  },
+  "crtt": {
+    "label": "Cable RTT",
+    "value": "0"
+  },
+  "cko": {
+    "label": "Offset from master",
+    "value": "0"
+  },
+  "setp": {
+    "label": "Phase setpoint",
+    "value": "0"
+  },
+  "ucnt": {
+    "label": "Update counter",
+    "value": "0"
+  },
+  "bslide": {
+    "label": "Bitslide",
+    "value": "0"
+  },
+  "hd": {
+    "label": "helper DAC code",
+    "value": "0"
+  },
+  "md": {
+    "label": "main DAC code",
+    "value": "0"
+  },
+  "ad": {
+    "label": "aux DAC code",
+    "value": "0"
+  }
+}
