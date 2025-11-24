@@ -1,4 +1,4 @@
-FROM ubuntu:20.04
+FROM ubuntu:24.04
 
 ARG DEBIAN_FRONTEND=noninteractive
 
@@ -18,6 +18,8 @@ RUN apt-get update \
 #ENV LANGUAGE=en_US:en
 #ENV LANG=en_US.UTF-8		
 #RUN locale-gen en_US.UTF-8
+
+RUN usermod -u 2000 ubuntu && groupmod -g 2000 ubuntu
 
 RUN groupadd -g ${CUR_GID} ${CUR_GN} \
 	&& useradd -u ${CUR_UID} -g ${CUR_GN} -d /home/${CUR_UN} ${CUR_UN} \
